@@ -35,12 +35,12 @@ estimate_metrics <- function(dat, metric, param_names, outcome_name, event_level
   type_info <- metrics_info(metric)
   types <- unique(type_info$type)
 
-  if (length(outcome_name) > 1L) {
-    rlang::abort(paste0(
-      "Internal error: Multiple outcomes are not ",
-      "supported in `estimate_metrics()`."
-    ))
-  }
+  # if (length(outcome_name) > 1L) {
+  #   rlang::abort(paste0(
+  #     "Internal error: Multiple outcomes are not ",
+  #     "supported in `estimate_metrics()`."
+  #   ))
+  # }
 
   if (all(types == "numeric")) {
     estimate_reg(dat, metric, param_names, outcome_name)
@@ -54,7 +54,8 @@ estimate_metrics <- function(dat, metric, param_names, outcome_name, event_level
 estimate_reg <- function(dat, metric, param_names, outcome_name) {
   dat %>%
     dplyr::group_by(!!!rlang::syms(param_names)) %>%
-    metric(estimate = .pred, truth = !!sym(outcome_name))
+    # REAL POINT of origin !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    metric(estimate =  c(!!!syms(paste0(".pred_", outcome_name))), truth = c(!!!syms(outcome_name)))
 }
 
 estimate_class_prob <- function(dat, metric, param_names, outcome_name, types, event_level) {
